@@ -1,19 +1,18 @@
 #!/bin/bash
 set -e
-# It's easier to refer to the script's original location and I'll use the home variable as the ~/ shortcut don't work on my system in the path variable and other issues.
+# reference run from dir to overcome ~/ not working in $PATH
 export SCRIPT_RAN_FROM_DIR=$PWD
 
-## Clean up first, want an if-exist here as I don't want to accidentally rmrfrootlol some poor persons system like I once did to myself,
-## also I could try the self-rerun trick I did 2014 but have a check root.
-# sudo rm -rf $HOME/.local/var/pmbootstrap
-# rm -rf out
-# rm -rf pmbootstrap
+## Clean up first, but only if they exist, to protect from rm -rf mistakes.
+echo cleaning old builds if exists...
+if [ -d $HOME/.local/var/pmbootstrap ]; then sudo rm -rf $HOME/.local/var/pmbootstrap; fi
+if [ -d $SCRIPT_RAN_FROM_DIR/out ]; then rm -rf out; fi
+if [ -d $SCRIPT_RAN_FROM_DIR/pmbootstrap ]; then rm -rf pmbootstrap; fi
+echo done.
 
-# Git identity, not needed I don't think... didn't make git break for me.
-# git config --global user.email "example@example.com"
-# git config --global user.name "Nonta72"
+# Git identity, not needed I don't think... didn't make git break for me. # git config --global user.email "example@example.com" # git config --global user.name "Nonta72"
 
-# Replace placeholders in .cfg files, checked and this really is needed during my line by line debug.
+# Replace placeholders in .cfg files, checked and this really is needed during my line by line debug
 find . -type f -name "*.cfg" -exec sed -i "s|HOME|$(echo $HOME)|;s|NPROC|$(nproc)|" {} +
 
 # Setup environment
@@ -23,8 +22,7 @@ export KERNEL_BRANCH=danila/spacewar-testing
 git clone https://gitlab.postmarketos.org/postmarketOS/pmbootstrap.git --depth 1
 mkdir -p $HOME/.local/bin
 export PATH="$PATH:$HOME/.local/bin"
-# really need an if-exist here, can't just have loose rm's evrywhere, made that mistake once, paranoid of them since ._.
-# sudo rm $HOME/.local/bin/pmbootstrap
+if [ -f $HOME/.local/bin/pmbootstrap ]; then rm $HOME/.local/bin/pmbootstrap; fi
 ln -s "$PWD/pmbootstrap/pmbootstrap.py" $HOME/.local/bin/pmbootstrap
 pmbootstrap --version
 
