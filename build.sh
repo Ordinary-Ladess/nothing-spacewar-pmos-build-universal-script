@@ -1,16 +1,24 @@
 #!/bin/bash
 set -e
+# login to make sudo request less, scatter these around hoping to quash much of them
+sudo -v
 # reference run from dir to overcome ~/ not working in $PATH
 export SCRIPT_RAN_FROM_DIR=$PWD
 
-## Clean up first, but only if they exist, to protect from rm -rf mistakes.
-echo cleaning old builds if exists...
-if [ -d $HOME/.local/var/pmbootstrap ]; then sudo rm -rf $HOME/.local/var/pmbootstrap; fi
-if [ -d $SCRIPT_RAN_FROM_DIR/out ]; then rm -rf out; fi
-if [ -d $SCRIPT_RAN_FROM_DIR/pmbootstrap ]; then rm -rf pmbootstrap; fi
-echo done.
-
-# Git identity, not needed I don't think... didn't make git break for me. # git config --global user.email "example@example.com" # git config --global user.name "Nonta72"
+## Clean up first, but only if they exist, presumably due to build errors, to protect from rm -rf mistakes.
+echo cleaning old or failed builds if exists...
+if [ -d $SCRIPT_RAN_FROM_DIR/pmbootstrap ]; then
+  echo -e "n\nn\ny\n" | pmbootstrap zap
+  sync
+  rm -rf pmbootstrap; fi
+if [ -d $HOME/.local/var/pmbootstrap ]; then
+  sudo rm -rf $HOME/.local/var/pmbootstrap
+fi
+if [ -d $SCRIPT_RAN_FROM_DIR/out ]; then
+  rm -rf out;
+fi
+sync
+echo cleaned.
 
 # Replace placeholders in .cfg files, checked and this really is needed during my line by line debug
 find . -type f -name "*.cfg" -exec sed -i "s|HOME|$(echo $HOME)|;s|NPROC|$(nproc)|" {} +
@@ -25,6 +33,8 @@ export PATH="$PATH:$HOME/.local/bin"
 if [ -f $HOME/.local/bin/pmbootstrap ]; then rm $HOME/.local/bin/pmbootstrap; fi
 ln -s "$PWD/pmbootstrap/pmbootstrap.py" $HOME/.local/bin/pmbootstrap
 pmbootstrap --version
+sync
+sudo -v
 
 # Init, bruv
 echo -e '\n\n' | pmbootstrap init || true
@@ -38,9 +48,10 @@ git reset --hard sc7280/$DEFAULT_BRANCH
 export DEFAULT_BRANCH=danila/spacewar-testing
 echo "Default branch is $DEFAULT_BRANCH"
 git clone https://github.com/mainlining/linux.git --single-branch --branch $KERNEL_BRANCH --depth 1
-
+sync
+sudo -v
 # Copy config to pmbootstrap
-cp $SCRIPT_RAN_FROM_DIR/nothing-spacewar.cfg $HOME/.config/pmbootstrap_v3.cfg
+cp $SCRIPT_RAN_FROM_DIR/nothing-spacewar-phosh.cfg $HOME/.config/pmbootstrap_v3.cfg
 
 # Compile kernel image
 cd linux
@@ -49,11 +60,16 @@ source $SCRIPT_RAN_FROM_DIR/pmbootstrap/helpers/envkernel.sh
 make defconfig sc7280.config
 make -j$(nproc)
 pmbootstrap build --envkernel linux-postmarketos-qcom-sc7280
+sync
+sudo -v
 
 # Build pmos images, failed here, but doesn't look like script issue
 echo building images
-cp $SCRIPT_RAN_FROM_DIR/nothing-spacewar.cfg $HOME/.config/pmbootstrap.cfg
+cp $SCRIPT_RAN_FROM_DIR/nothing-spacewar-phosh.cfg $HOME/.config/pmbootstrap.cfg
+sync
 pmbootstrap install --password 1114
+sync
+sudo -v
 
 # Export build images to outdir
 echo exporting images
