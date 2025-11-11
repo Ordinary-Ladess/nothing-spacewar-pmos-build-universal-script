@@ -80,4 +80,5 @@ mkdir $SCRIPT_RAN_FROM_DIR/out
 cp /tmp/postmarketOS-export/boot.img $SCRIPT_RAN_FROM_DIR/out/boot-nothing-spacewar.img
 cp /tmp/postmarketOS-export/nothing-spacewar.img $SCRIPT_RAN_FROM_DIR/out/rootfs-nothing-spacewar.img
 tar -c -I 'xz -9 -T0' -f $SCRIPT_RAN_FROM_DIR/out/Spacewar_pmos.tar.xz $SCRIPT_RAN_FROM_DIR/out/rootfs-nothing-spacewar.img $SCRIPT_RAN_FROM_DIR/out/boot-nothing-spacewar.img
+cp $SCRIPT_RAN_FROM_DIR/flashpmos.sh $SCRIPT_RAN_FROM_DIR/out/flashpmos.sh 
 echo -e "n\nn\ny\n" | pmbootstrap zap
