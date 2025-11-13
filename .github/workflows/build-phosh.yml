@@ -2,8 +2,6 @@ name: Build weekly images (phosh)
 on:
   #push: Disable build on push for now
   workflow_dispatch:
-  schedule:
-    - cron: '0 1 * * 5' # Run every friday at midnight
 
 env:
   KERNEL_BRANCH: danila/spacewar-testing
@@ -89,3 +87,4 @@ jobs:
           name: nothing-spacewar-phosh
           path: out/*-spacewar.img*
           retention-days: 7
+
