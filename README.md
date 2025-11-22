@@ -1,4 +1,4 @@
-<h1>Build and flash PostMarketOS for NothingPhomne 1 SpaceWar</h1> <br>
+<h1>Build PostMarketOS for NothingPhone 1 SpaceWar</h1> <br>
 
 (Sometimes*) Builds images on:<br>
 Debian Trixie<br>
