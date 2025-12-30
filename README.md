@@ -1,8 +1,12 @@
 <h1>Build PostMarketOS for NothingPhone 1 SpaceWar</h1> <br>
 
-<br><br><h1>Notice: Building is very broken for some reason, even GitHub servers aren't fast enough to overcome package download stages failing</h1>
+<br><br><h1>Notice: Building is very broken for some reason, Looks to be caused by a non-existent dependency.</h1>
 <br>I'll be seeing if I can get some advice, but this project maybe put on hold for months due to time.<br>
-I've figured out a fix for the sudo issue, it's quite insecure versus if we had some kind of 'sudo --passwordless-session' or something, but broken will work better than nothing.<br>
+
+<br><br> Sudo is fixed, no longer asks for a password mid build<br>
+I'll be adding the sudo code to my scripts playground repo for anyone to use anywhere.<br>
+I'm going to have to scour the internet for a few ideas on how to generate random data to pump into the password variable<br>
+to prevent data leaks after the script ends, bad enough to have the data leak risk whilst the script is running.
 
 (Sometimes*) Builds images on:<br>
 Debian Trixie<br>
