@@ -1,7 +1,17 @@
 #!/bin/bash
 set -e
-# login to make sudo request less, scatter these around hoping to quash much of them
-sudo -v
+# login prompt to get a password for sudo, insecure, but I don't yet know of a safer option
+echo -e "This script needs the password for sudo,"
+echo -n "please type password and press enter: "
+read BUILD_SUDO_PASSWORD
+
+#reference I made as I experimented, sussed I needed to use double quotes to prevent accidental command escaping:
+#echo -n "input: ";read input;echo "$input"
+
+#No longer needed these sudo -v things.... but keepin gthem around for references
+#sudo -v
+#Will this work if -v sometimes doesn't ask for password?
+echo "$BUILD_SUDO_PASSWORD\n" |sudo -v -S
 # reference run from dir to overcome ~/ not working in $PATH
 export SCRIPT_RAN_FROM_DIR=$PWD
 export PATH="$PATH:$HOME/.local/bin"
@@ -40,7 +50,8 @@ if [ -f $HOME/.local/bin/pmbootstrap ]; then rm $HOME/.local/bin/pmbootstrap; fi
 ln -s "$PWD/pmbootstrap/pmbootstrap.py" $HOME/.local/bin/pmbootstrap
 pmbootstrap --version
 sync
-sudo -v
+echo "$BUILD_SUDO_PASSWORD\n" |sudo -v -S
+#sudo -v
 
 # Init, bruv
 echo -e '\n\n' | pmbootstrap init || true
@@ -55,7 +66,8 @@ export DEFAULT_BRANCH=danila/spacewar-testing
 echo "Default branch is $DEFAULT_BRANCH"
 git clone https://github.com/mainlining/linux.git --single-branch --branch $KERNEL_BRANCH --depth 1
 sync
-sudo -v
+echo "$BUILD_SUDO_PASSWORD\n" |sudo -v -S
+#sudo -v
 # Copy config to pmbootstrap
 cp $SCRIPT_RAN_FROM_DIR/nothing-spacewar-phosh.cfg $HOME/.config/pmbootstrap_v3.cfg
 
@@ -67,7 +79,8 @@ make defconfig sc7280.config
 make -j$(nproc)
 pmbootstrap build --envkernel linux-postmarketos-qcom-sc7280
 sync
-sudo -v
+echo "$BUILD_SUDO_PASSWORD\n" |sudo -v -S
+#sudo -v
 
 # Build pmos images, failed here, but doesn't look like script issue
 echo building images
@@ -75,7 +88,8 @@ cp $SCRIPT_RAN_FROM_DIR/nothing-spacewar-phosh.cfg $HOME/.config/pmbootstrap.cfg
 sync
 pmbootstrap -t 6000 install --password 1114
 sync
-sudo -v
+echo "$BUILD_SUDO_PASSWORD\n" |sudo -v -S
+#sudo -v
 
 # Export build images to outdir
 echo exporting images
